@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { Scissors, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { VideoUploader } from './VideoUploader';
@@ -8,35 +8,41 @@ import { OnboardingModal } from './OnboardingModal';
 import { useAuthStore } from '../store/authStore';
 import { useVideoStore } from '../store/videoStore';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile } from '@ffmpeg/util';
+import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { toast } from 'react-toastify';
 
-export const VideoProcessor: React.FC = () => {
+interface VideoProcessorProps {
+  onProcess?: (videoFile: File) => Promise<any[]>
+  onExtractAudio?: (videoFile: File) => Promise<Blob>
+}
+
+const VideoProcessor: React.FC<VideoProcessorProps> = ({ onProcess, onExtractAudio }) => {
   const navigate = useNavigate();
   const { user, logout, hasCompletedOnboarding } = useAuthStore();
   const { videos, audioFiles, updateVideoStatus, addVideo } = useVideoStore();
   const [showOnboarding, setShowOnboarding] = useState(!hasCompletedOnboarding);
-  const [ffmpeg, setFfmpeg] = useState<FFmpeg | null>(null);
+  const ffmpegRef = useRef<FFmpeg>(new FFmpeg());
+  const loaded = useRef(false);
+
+  const load = async () => {
+    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
+    const ffmpeg = ffmpegRef.current;
+    
+    if (!loaded.current) {
+      await ffmpeg.load({
+        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm')
+      });
+      loaded.current = true;
+    }
+  };
 
   useEffect(() => {
-    const initFFmpeg = async () => {
-      const ffmpegInstance = new FFmpeg();
-      try {
-        await ffmpegInstance.load({
-          coreURL: '/ffmpeg-core.js',
-          wasmURL: '/ffmpeg-core.wasm',
-        });
-        setFfmpeg(ffmpegInstance);
-      } catch (error) {
-        console.error('Error loading FFmpeg:', error);
-        toast.error('Erro ao inicializar o processador de vídeo');
-      }
-    };
-    initFFmpeg();
+    load();
   }, []);
 
   const processVideo = useCallback(async (videoFile: File) => {
-    if (!ffmpeg) {
+    if (!ffmpegRef.current) {
       toast.error('Processador de vídeo não inicializado');
       return;
     }
@@ -46,10 +52,10 @@ export const VideoProcessor: React.FC = () => {
 
     try {
       updateVideoStatus(videoId, 'processing', 0);
-      await ffmpeg.writeFile('input.mp4', await fetchFile(videoFile));
+      await ffmpegRef.current.writeFile('input.mp4', await fetchFile(videoFile));
 
       // Cortar o vídeo em segmentos
-      await ffmpeg.exec([
+      await ffmpegRef.current.exec([
         '-i', 'input.mp4',
         '-c', 'copy',
         '-segment_time', '5',
@@ -63,7 +69,7 @@ export const VideoProcessor: React.FC = () => {
       while (true) {
         try {
           updateVideoStatus(videoId, 'processing', Math.min((i + 1) * 20, 90));
-          const data = await ffmpeg.readFile(`output_${String(i).padStart(3, '0')}.mp4`);
+          const data = await ffmpegRef.current.readFile(`output_${String(i).padStart(3, '0')}.mp4`);
           segments.push(new Blob([data], { type: 'video/mp4' }));
           i++;
         } catch {
@@ -79,10 +85,10 @@ export const VideoProcessor: React.FC = () => {
       toast.error('Erro ao processar o vídeo');
       throw error;
     }
-  }, [ffmpeg, addVideo, updateVideoStatus]);
+  }, [ffmpegRef, addVideo, updateVideoStatus]);
 
   const extractAudio = useCallback(async (videoFile: File) => {
-    if (!ffmpeg) {
+    if (!ffmpegRef.current) {
       toast.error('Processador de vídeo não inicializado');
       return;
     }
@@ -92,17 +98,17 @@ export const VideoProcessor: React.FC = () => {
 
     try {
       updateVideoStatus(audioId, 'processing', 0);
-      await ffmpeg.writeFile('input.mp4', await fetchFile(videoFile));
+      await ffmpegRef.current.writeFile('input.mp4', await fetchFile(videoFile));
 
       // Extrair áudio
-      await ffmpeg.exec([
+      await ffmpegRef.current.exec([
         '-i', 'input.mp4',
         '-vn', '-acodec', 'copy',
         'output.aac'
       ]);
 
       updateVideoStatus(audioId, 'processing', 50);
-      const data = await ffmpeg.readFile('output.aac');
+      const data = await ffmpegRef.current.readFile('output.aac');
       const audioBlob = new Blob([data], { type: 'audio/aac' });
 
       updateVideoStatus(audioId, 'completed', 100);
@@ -113,7 +119,7 @@ export const VideoProcessor: React.FC = () => {
       toast.error('Erro ao extrair o áudio');
       throw error;
     }
-  }, [ffmpeg, addVideo, updateVideoStatus]);
+  }, [ffmpegRef, addVideo, updateVideoStatus]);
 
   const handleLogout = () => {
     logout();
@@ -153,3 +159,5 @@ export const VideoProcessor: React.FC = () => {
     </div>
   );
 };
+
+export default VideoProcessor;
