@@ -1,6 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { AuthState, User } from '../types/auth';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  hasCompletedOnboarding: boolean;
+  setUser: (user: User | null) => void;
+  completeOnboarding: () => void;
+  logout: () => void;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+}
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -8,6 +24,9 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isAuthenticated: false,
       hasCompletedOnboarding: false,
+      setUser: (user) => set({ user }),
+      completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+      logout: () => set({ user: null }),
       login: async (email: string, password: string) => {
         const user: User = {
           id: crypto.randomUUID(),
@@ -23,12 +42,6 @@ export const useAuthStore = create<AuthState>()(
           name,
         };
         set({ user, isAuthenticated: true });
-      },
-      logout: () => {
-        set({ user: null, isAuthenticated: false });
-      },
-      completeOnboarding: () => {
-        set({ hasCompletedOnboarding: true });
       }
     }),
     {

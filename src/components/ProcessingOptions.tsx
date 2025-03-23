@@ -3,6 +3,11 @@ import { Settings, Share2 } from 'lucide-react';
 import { useVideoStore } from '../store/videoStore';
 import Select from 'react-select';
 
+interface Option {
+  value: string;
+  label: string;
+}
+
 const socialPlatforms = [
   { value: 'youtube', label: 'YouTube' },
   { value: 'instagram', label: 'Instagram' },
@@ -13,6 +18,11 @@ const socialPlatforms = [
 
 export const ProcessingOptions: React.FC = () => {
   const { options, updateOptions, audioFiles } = useVideoStore();
+
+  const options: Option[] = [
+    { value: 'split', label: 'Dividir Vídeo' },
+    { value: 'audio', label: 'Extrair Áudio' }
+  ];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
@@ -119,7 +129,19 @@ export const ProcessingOptions: React.FC = () => {
             Renomear arquivos automaticamente
           </label>
         </div>
+
+        <div>
+          <Select
+            className="basic-single"
+            classNamePrefix="select"
+            defaultValue={options[0]}
+            name="processing-option"
+            options={options}
+          />
+        </div>
       </div>
     </div>
   );
 };
+
+export default ProcessingOptions;

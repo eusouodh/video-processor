@@ -13,7 +13,11 @@ interface Platform {
   connected: boolean;
 }
 
-export const SocialMediaOnboarding: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+interface SocialMediaOnboardingProps {
+  onClose: () => void;
+}
+
+export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ onClose }) => {
   const { completeOnboarding } = useAuthStore();
   const [platforms, setPlatforms] = useState<Platform[]>([
     { id: 'youtube', name: 'YouTube', icon: <Youtube />, connected: false },
@@ -116,3 +120,5 @@ export const SocialMediaOnboarding: React.FC<{ onClose?: () => void }> = ({ onCl
     </div>
   );
 };
+
+export default SocialMediaOnboarding;

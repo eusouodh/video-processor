@@ -8,12 +8,12 @@ import { OnboardingModal } from './OnboardingModal';
 import { useAuthStore } from '../store/authStore';
 import { useVideoStore } from '../store/videoStore';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
+import { fetchFile } from '@ffmpeg/util';
 import { toast } from 'react-toastify';
 
 interface VideoProcessorProps {
-  onProcess?: (videoFile: File) => Promise<any[]>
-  onExtractAudio?: (videoFile: File) => Promise<Blob>
+  onProcess?: (videoFile: File) => Promise<any[]>;
+  onExtractAudio?: (videoFile: File) => Promise<Blob>;
 }
 
 const VideoProcessor: React.FC<VideoProcessorProps> = ({ onProcess, onExtractAudio }) => {
@@ -25,14 +25,10 @@ const VideoProcessor: React.FC<VideoProcessorProps> = ({ onProcess, onExtractAud
   const loaded = useRef(false);
 
   const load = async () => {
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
     const ffmpeg = ffmpegRef.current;
     
     if (!loaded.current) {
-      await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm')
-      });
+      await ffmpeg.load();
       loaded.current = true;
     }
   };
