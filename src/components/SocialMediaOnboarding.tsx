@@ -36,9 +36,9 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
     { id: 'tiktok', name: 'TikTok', icon: <TikTok />, connected: false }
   ]);
 
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [endDate, setEndDate] = useState<Date | null>(new Date());
-  const [postsPerDay, setPostsPerDay] = useState(1);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [postsPerDay, setPostsPerDay] = useState<number>(1);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
 
   const handleConnect = async (platformId: string) => {
@@ -127,31 +127,28 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Data de Início</label>
-              <div className="mt-1">
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date: Date | null) => setStartDate(date)}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <DatePicker
+                selected={startDate}
+                onChange={(date: Date | null) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                minDate={new Date()}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Data de Término</label>
-              <div className="mt-1">
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date: Date | null) => setEndDate(date)}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
+              <DatePicker
+                selected={endDate}
+                onChange={(date: Date | null) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || new Date()}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              />
             </div>
 
             <div>
@@ -161,7 +158,7 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
                 min="1"
                 max="10"
                 value={postsPerDay}
-                onChange={(e) => setPostsPerDay(Number(e.target.value))}
+                onChange={(e) => setPostsPerDay(parseInt(e.target.value))}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>

@@ -11,30 +11,29 @@ interface Option {
 }
 
 interface ProcessingOptionsProps {
-  onAudioChange: (audio: string) => void;
-  onPlatformChange: (platform: string) => void;
-  onProcessingTypeChange: (type: string) => void;
-  selectedAudio: string;
-  selectedPlatform: string;
-  selectedProcessingType: string;
+  onAudioChange: (option: Option | null) => void;
+  onPlatformChange: (option: Option | null) => void;
+  onProcessingTypeChange: (option: Option | null) => void;
+  selectedAudio: Option | null;
+  selectedPlatform: Option | null;
+  selectedProcessingType: Option | null;
 }
 
 const audioOptions: Option[] = [
   { value: 'original', label: 'Áudio Original' },
-  { value: 'music', label: 'Música de Fundo' },
-  { value: 'voice', label: 'Voz Sintetizada' },
+  { value: 'remove', label: 'Remover Áudio' },
+  { value: 'background', label: 'Música de Fundo' },
 ];
 
 const platformOptions: Option[] = [
   { value: 'youtube', label: 'YouTube' },
-  { value: 'instagram', label: 'Instagram' },
   { value: 'tiktok', label: 'TikTok' },
+  { value: 'instagram', label: 'Instagram' },
 ];
 
 const processingOptions: Option[] = [
-  { value: 'trim', label: 'Cortar Vídeo' },
-  { value: 'merge', label: 'Juntar Vídeos' },
-  { value: 'subtitle', label: 'Adicionar Legendas' },
+  { value: 'shorts', label: 'Shorts' },
+  { value: 'reels', label: 'Reels' },
 ];
 
 const selectStyles: StylesConfig<Option> = {
@@ -61,24 +60,6 @@ export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
   selectedPlatform,
   selectedProcessingType,
 }) => {
-  const handleAudioChange = (option: Option | null) => {
-    if (option) {
-      onAudioChange(option.value);
-    }
-  };
-
-  const handlePlatformChange = (option: Option | null) => {
-    if (option) {
-      onPlatformChange(option.value);
-    }
-  };
-
-  const handleProcessingTypeChange = (option: Option | null) => {
-    if (option) {
-      onProcessingTypeChange(option.value);
-    }
-  };
-
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
       <div className="flex items-center gap-2 mb-4">
@@ -137,34 +118,31 @@ export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Tipo de Áudio</label>
-          <Select<Option>
+          <label className="block text-sm font-medium text-gray-700">Opções de Áudio</label>
+          <Select
             options={audioOptions}
-            onChange={handleAudioChange}
-            value={audioOptions.find(option => option.value === selectedAudio)}
-            styles={selectStyles}
+            onChange={onAudioChange}
+            value={selectedAudio}
             className="mt-1"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Plataforma</label>
-          <Select<Option>
+          <Select
             options={platformOptions}
-            onChange={handlePlatformChange}
-            value={platformOptions.find(option => option.value === selectedPlatform)}
-            styles={selectStyles}
+            onChange={onPlatformChange}
+            value={selectedPlatform}
             className="mt-1"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Tipo de Processamento</label>
-          <Select<Option>
+          <Select
             options={processingOptions}
-            onChange={handleProcessingTypeChange}
-            value={processingOptions.find(option => option.value === selectedProcessingType)}
-            styles={selectStyles}
+            onChange={onProcessingTypeChange}
+            value={selectedProcessingType}
             className="mt-1"
           />
         </div>
