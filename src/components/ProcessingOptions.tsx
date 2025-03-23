@@ -1,7 +1,8 @@
 import React from 'react';
 import { Settings, Share2 } from 'lucide-react';
 import { useVideoStore } from '../store/videoStore';
-import Select, { SingleValue, StylesConfig } from 'react-select';
+import type { SingleValue, StylesConfig } from 'react-select';
+import Select from 'react-select';
 
 interface Option {
   value: string;

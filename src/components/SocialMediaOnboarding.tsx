@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Youtube, Instagram, Facebook, BookText as TikTok, ChevronRight } from 'lucide-react';
-import DatePicker from 'react-datepicker';
 import type { ReactDatePickerProps } from 'react-datepicker';
+import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-toastify';
