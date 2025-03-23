@@ -127,25 +127,31 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Data de Início</label>
-              <CustomDatePicker
-                selected={startDate}
-                onChange={(date: Date) => setStartDate(date)}
-                selectsStart
-                startDate={startDate}
-                endDate={endDate}
-              />
+              <div className="mt-1">
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date: Date | null) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Data de Término</label>
-              <CustomDatePicker
-                selected={endDate}
-                onChange={(date: Date) => setEndDate(date)}
-                selectsEnd
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-              />
+              <div className="mt-1">
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date: Date | null) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                />
+              </div>
             </div>
 
             <div>

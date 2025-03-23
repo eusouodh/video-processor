@@ -3,6 +3,7 @@ import { Settings, Share2 } from 'lucide-react';
 import { useVideoStore } from '../store/videoStore';
 import type { SingleValue, StylesConfig } from 'react-select';
 import Select from 'react-select';
+import type { Props as SelectProps } from 'react-select';
 
 interface Option {
   value: string;
@@ -37,7 +38,7 @@ const processingOptions: Option[] = [
 ];
 
 const selectStyles: StylesConfig<Option> = {
-  control: (base) => ({
+  control: (base: any) => ({
     ...base,
     backgroundColor: 'white',
     borderColor: '#E5E7EB',
@@ -45,7 +46,7 @@ const selectStyles: StylesConfig<Option> = {
       borderColor: '#6366F1',
     },
   }),
-  option: (base, { isFocused, isSelected }) => ({
+  option: (base: any, { isFocused, isSelected }: any) => ({
     ...base,
     backgroundColor: isSelected ? '#6366F1' : isFocused ? '#E0E7FF' : 'white',
     color: isSelected ? 'white' : '#374151',
@@ -60,19 +61,19 @@ export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
   selectedPlatform,
   selectedProcessingType,
 }) => {
-  const handleAudioChange = (option: SingleValue<Option>) => {
+  const handleAudioChange = (option: Option | null) => {
     if (option) {
       onAudioChange(option.value);
     }
   };
 
-  const handlePlatformChange = (option: SingleValue<Option>) => {
+  const handlePlatformChange = (option: Option | null) => {
     if (option) {
       onPlatformChange(option.value);
     }
   };
 
-  const handleProcessingTypeChange = (option: SingleValue<Option>) => {
+  const handleProcessingTypeChange = (option: Option | null) => {
     if (option) {
       onProcessingTypeChange(option.value);
     }
