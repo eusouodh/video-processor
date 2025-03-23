@@ -1,7 +1,7 @@
 import React from 'react';
 import { Settings, Share2 } from 'lucide-react';
 import { useVideoStore } from '../store/videoStore';
-import Select, { SingleValue } from 'react-select';
+import Select, { SingleValue, StylesConfig } from 'react-select';
 
 interface Option {
   value: string;
@@ -34,6 +34,22 @@ const processingOptions: Option[] = [
   { value: 'merge', label: 'Juntar Vídeos' },
   { value: 'subtitle', label: 'Adicionar Legendas' },
 ];
+
+const selectStyles: StylesConfig<Option> = {
+  control: (base) => ({
+    ...base,
+    backgroundColor: 'white',
+    borderColor: '#E5E7EB',
+    '&:hover': {
+      borderColor: '#6366F1',
+    },
+  }),
+  option: (base, { isFocused, isSelected }) => ({
+    ...base,
+    backgroundColor: isSelected ? '#6366F1' : isFocused ? '#E0E7FF' : 'white',
+    color: isSelected ? 'white' : '#374151',
+  }),
+};
 
 export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
   onAudioChange,
@@ -120,30 +136,33 @@ export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Tipo de Áudio</label>
-          <Select
+          <Select<Option>
             options={audioOptions}
             onChange={handleAudioChange}
             value={audioOptions.find(option => option.value === selectedAudio)}
+            styles={selectStyles}
             className="mt-1"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Plataforma</label>
-          <Select
+          <Select<Option>
             options={platformOptions}
             onChange={handlePlatformChange}
             value={platformOptions.find(option => option.value === selectedPlatform)}
+            styles={selectStyles}
             className="mt-1"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Tipo de Processamento</label>
-          <Select
+          <Select<Option>
             options={processingOptions}
             onChange={handleProcessingTypeChange}
             value={processingOptions.find(option => option.value === selectedProcessingType)}
+            styles={selectStyles}
             className="mt-1"
           />
         </div>
