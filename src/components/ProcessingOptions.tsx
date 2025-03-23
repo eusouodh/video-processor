@@ -1,9 +1,6 @@
-import React from 'react';
-import { Settings, Share2 } from 'lucide-react';
-import { useVideoStore } from '../store/videoStore';
-import type { SingleValue, StylesConfig } from 'react-select';
+import React, { useState } from 'react';
+import { Settings } from 'lucide-react';
 import Select from 'react-select';
-import type { Props as SelectProps } from 'react-select';
 
 interface Option {
   value: string;
@@ -17,6 +14,13 @@ interface ProcessingOptionsProps {
   selectedAudio: Option | null;
   selectedPlatform: Option | null;
   selectedProcessingType: Option | null;
+}
+
+interface ProcessingState {
+  minDuration: number;
+  maxDuration: number;
+  finalDuration: number;
+  autoRename: boolean;
 }
 
 const audioOptions: Option[] = [
@@ -36,22 +40,6 @@ const processingOptions: Option[] = [
   { value: 'reels', label: 'Reels' },
 ];
 
-const selectStyles: StylesConfig<Option> = {
-  control: (base: any) => ({
-    ...base,
-    backgroundColor: 'white',
-    borderColor: '#E5E7EB',
-    '&:hover': {
-      borderColor: '#6366F1',
-    },
-  }),
-  option: (base: any, { isFocused, isSelected }: any) => ({
-    ...base,
-    backgroundColor: isSelected ? '#6366F1' : isFocused ? '#E0E7FF' : 'white',
-    color: isSelected ? 'white' : '#374151',
-  }),
-};
-
 export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
   onAudioChange,
   onPlatformChange,
@@ -60,6 +48,17 @@ export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
   selectedPlatform,
   selectedProcessingType,
 }) => {
+  const [options, setOptions] = useState<ProcessingState>({
+    minDuration: 3,
+    maxDuration: 6,
+    finalDuration: 30,
+    autoRename: false,
+  });
+
+  const updateOptions = (newOptions: Partial<ProcessingState>) => {
+    setOptions(prev => ({ ...prev, ...newOptions }));
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
       <div className="flex items-center gap-2 mb-4">

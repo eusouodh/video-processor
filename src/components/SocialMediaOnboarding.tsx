@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Youtube, Instagram, Facebook, BookText as TikTok, ChevronRight } from 'lucide-react';
-import type { ReactDatePickerProps } from 'react-datepicker';
+import { Youtube, Instagram, Facebook, BookText as TikTok } from 'lucide-react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthStore } from '../store/authStore';
@@ -17,15 +16,6 @@ interface Platform {
 interface SocialMediaOnboardingProps {
   onClose: () => void;
 }
-
-const CustomDatePicker = (props: ReactDatePickerProps) => {
-  return (
-    <DatePicker
-      {...props}
-      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    />
-  );
-};
 
 export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ onClose }) => {
   const { completeOnboarding } = useAuthStore();
@@ -43,7 +33,6 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
 
   const handleConnect = async (platformId: string) => {
     try {
-      // Simula integração com a rede social
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setPlatforms(platforms.map(p => 
@@ -64,7 +53,6 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (startDate && endDate) {
-      // Implemente a lógica para enviar os dados ao servidor
       console.log({
         startDate,
         endDate,

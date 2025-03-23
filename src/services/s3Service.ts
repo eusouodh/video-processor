@@ -1,5 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3'
-import { PutObjectCommand } from '@aws-sdk/client-s3/dist-types/commands/PutObjectCommand'
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 
 const s3Client = new S3Client({
   region: import.meta.env.VITE_AWS_REGION || 'us-east-1',
@@ -9,19 +8,19 @@ const s3Client = new S3Client({
   }
 })
 
-export const uploadToS3 = async (file: File, key: string) => {
+export const uploadToS3 = async (file: File, key: string): Promise<string> => {
   try {
     const command = new PutObjectCommand({
-      Bucket: import.meta.env.VITE_AWS_BUCKET_NAME,
+      Bucket: import.meta.env.VITE_AWS_BUCKET_NAME || '',
       Key: key,
       Body: file,
       ContentType: file.type
     })
 
     await s3Client.send(command)
-    return `https://${import.meta.env.VITE_AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`
+    return `https://${import.meta.env.VITE_AWS_BUCKET_NAME}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${key}`
   } catch (error) {
-    console.error('Erro ao fazer upload para S3:', error)
+    console.error('Erro ao fazer upload para o S3:', error)
     throw error
   }
 } 
