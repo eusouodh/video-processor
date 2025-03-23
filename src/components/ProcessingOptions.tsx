@@ -16,13 +16,13 @@ const socialPlatforms = [
   { value: 'download', label: 'Download' }
 ];
 
+const processingOptions: Option[] = [
+  { value: 'split', label: 'Dividir Vídeo' },
+  { value: 'audio', label: 'Extrair Áudio' }
+];
+
 export const ProcessingOptions: React.FC = () => {
   const { options, updateOptions, audioFiles } = useVideoStore();
-
-  const options: Option[] = [
-    { value: 'split', label: 'Dividir Vídeo' },
-    { value: 'audio', label: 'Extrair Áudio' }
-  ];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
@@ -85,7 +85,7 @@ export const ProcessingOptions: React.FC = () => {
           <label className="block text-sm font-medium text-gray-700">
             Áudio Viral
           </label>
-          <Select
+          <Select<Option>
             value={audioFiles.find(a => a.id === options.selectedAudio)}
             onChange={(selected) =>
               updateOptions({ selectedAudio: selected?.id })
@@ -107,10 +107,10 @@ export const ProcessingOptions: React.FC = () => {
               Plataforma de Destino
             </div>
           </label>
-          <Select
+          <Select<Option>
             value={socialPlatforms.find(p => p.value === options.socialPlatform)}
             onChange={(selected) =>
-              updateOptions({ socialPlatform: selected?.value as any })
+              updateOptions({ socialPlatform: selected?.value })
             }
             options={socialPlatforms}
             className="mt-1"
@@ -131,12 +131,12 @@ export const ProcessingOptions: React.FC = () => {
         </div>
 
         <div>
-          <Select
+          <Select<Option>
             className="basic-single"
             classNamePrefix="select"
-            defaultValue={options[0]}
+            defaultValue={processingOptions[0]}
             name="processing-option"
-            options={options}
+            options={processingOptions}
           />
         </div>
       </div>

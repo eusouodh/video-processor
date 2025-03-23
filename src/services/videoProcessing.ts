@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { s3Service } from './s3Service';
+import { uploadToS3 } from './s3Service';
 
 export class VideoProcessor {
   private apiUrl: string;
@@ -15,7 +15,7 @@ export class VideoProcessor {
       // Upload do vídeo para o S3
       onProgress(10);
       const videoKey = `videos/${uuidv4()}-${videoFile.name}`;
-      const s3Url = await s3Service.uploadFile(videoFile, videoKey);
+      const s3Url = await uploadToS3(videoFile, videoKey);
 
       // Iniciar extração de áudio
       onProgress(40);
@@ -38,7 +38,7 @@ export class VideoProcessor {
       if (status === 'completed' && lastStatusResponse) {
         // Download do áudio do S3
         const audioKey = lastStatusResponse.data.audioKey;
-        const audioBlob = await s3Service.downloadFile(audioKey);
+        const audioBlob = await uploadToS3(audioKey);
         onProgress(100);
         return audioBlob;
       } else {
@@ -60,7 +60,7 @@ export class VideoProcessor {
       onProgress(5);
       const videoUploads = videoFiles.map(async (file, index) => {
         const videoKey = `videos/${uuidv4()}-${file.name}`;
-        return await s3Service.uploadFile(file, videoKey);
+        return await uploadToS3(file, videoKey);
       });
 
       const videoUrls = await Promise.all(videoUploads);
@@ -68,7 +68,7 @@ export class VideoProcessor {
       // Upload do áudio para o S3
       onProgress(30);
       const audioKey = `audio/${uuidv4()}-${audioFile.name}`;
-      const audioUrl = await s3Service.uploadFile(audioFile, audioKey);
+      const audioUrl = await uploadToS3(audioFile, audioKey);
 
       // Iniciar processamento
       onProgress(40);
@@ -92,7 +92,7 @@ export class VideoProcessor {
       if (status === 'completed' && lastStatusResponse) {
         // Download do vídeo final do S3
         const outputKey = lastStatusResponse.data.outputKey;
-        const videoBlob = await s3Service.downloadFile(outputKey);
+        const videoBlob = await uploadToS3(outputKey);
         onProgress(100);
         return videoBlob;
       } else {
@@ -106,3 +106,14 @@ export class VideoProcessor {
 }
 
 export const videoProcessor = new VideoProcessor();
+
+export const processVideo = async (file: File) => {
+  try {
+    const key = `videos/${Date.now()}-${file.name}`;
+    const url = await uploadToS3(file, key);
+    return url;
+  } catch (error) {
+    console.error('Erro ao processar vídeo:', error);
+    throw error;
+  }
+};

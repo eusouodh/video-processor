@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Youtube, Instagram, Facebook, BookText as TikTok, ChevronRight } from 'lucide-react';
-import DatePicker from 'react-datepicker';
+import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-toastify';
@@ -91,9 +91,9 @@ export const SocialMediaOnboarding: React.FC<SocialMediaOnboardingProps> = ({ on
         <div className="border-t pt-6">
           <h3 className="text-lg font-semibold mb-4">Agendamento de Posts</h3>
           <div className="flex items-center gap-4">
-            <DatePicker
+            <ReactDatePicker
               selected={scheduleDate}
-              onChange={(date) => setScheduleDate(date)}
+              onChange={(date: Date | null) => setScheduleDate(date)}
               showTimeSelect
               dateFormat="Pp"
               placeholderText="Selecione data e hora"

@@ -18,7 +18,7 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create(
   persist(
     (set) => ({
       user: null,
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
       hasCompletedOnboarding: false,
       setUser: (user) => set({ user }),
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
-      logout: () => set({ user: null }),
+      logout: () => set({ user: null, isAuthenticated: false }),
       login: async (email: string, password: string) => {
         const user: User = {
           id: crypto.randomUUID(),
@@ -48,4 +48,4 @@ export const useAuthStore = create<AuthState>()(
       name: 'auth-storage'
     }
   )
-);
+) as unknown as () => AuthState;
