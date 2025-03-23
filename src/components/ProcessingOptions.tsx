@@ -1,28 +1,65 @@
 import React from 'react';
 import { Settings, Share2 } from 'lucide-react';
 import { useVideoStore } from '../store/videoStore';
-import Select from 'react-select';
+import Select, { SingleValue } from 'react-select';
 
 interface Option {
   value: string;
   label: string;
 }
 
-const socialPlatforms = [
+interface ProcessingOptionsProps {
+  onAudioChange: (audio: string) => void;
+  onPlatformChange: (platform: string) => void;
+  onProcessingTypeChange: (type: string) => void;
+  selectedAudio: string;
+  selectedPlatform: string;
+  selectedProcessingType: string;
+}
+
+const audioOptions: Option[] = [
+  { value: 'original', label: 'Áudio Original' },
+  { value: 'music', label: 'Música de Fundo' },
+  { value: 'voice', label: 'Voz Sintetizada' },
+];
+
+const platformOptions: Option[] = [
   { value: 'youtube', label: 'YouTube' },
   { value: 'instagram', label: 'Instagram' },
   { value: 'tiktok', label: 'TikTok' },
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'download', label: 'Download' }
 ];
 
 const processingOptions: Option[] = [
-  { value: 'split', label: 'Dividir Vídeo' },
-  { value: 'audio', label: 'Extrair Áudio' }
+  { value: 'trim', label: 'Cortar Vídeo' },
+  { value: 'merge', label: 'Juntar Vídeos' },
+  { value: 'subtitle', label: 'Adicionar Legendas' },
 ];
 
-export const ProcessingOptions: React.FC = () => {
-  const { options, updateOptions, audioFiles } = useVideoStore();
+export const ProcessingOptions: React.FC<ProcessingOptionsProps> = ({
+  onAudioChange,
+  onPlatformChange,
+  onProcessingTypeChange,
+  selectedAudio,
+  selectedPlatform,
+  selectedProcessingType,
+}) => {
+  const handleAudioChange = (option: SingleValue<Option>) => {
+    if (option) {
+      onAudioChange(option.value);
+    }
+  };
+
+  const handlePlatformChange = (option: SingleValue<Option>) => {
+    if (option) {
+      onPlatformChange(option.value);
+    }
+  };
+
+  const handleProcessingTypeChange = (option: SingleValue<Option>) => {
+    if (option) {
+      onProcessingTypeChange(option.value);
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
@@ -82,37 +119,31 @@ export const ProcessingOptions: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Áudio Viral
-          </label>
-          <Select<Option>
-            value={audioFiles.find(a => a.id === options.selectedAudio)}
-            onChange={(selected) =>
-              updateOptions({ selectedAudio: selected?.id })
-            }
-            options={audioFiles.map(audio => ({
-              value: audio.id,
-              label: audio.name
-            }))}
+          <label className="block text-sm font-medium text-gray-700">Tipo de Áudio</label>
+          <Select
+            options={audioOptions}
+            onChange={handleAudioChange}
+            value={audioOptions.find(option => option.value === selectedAudio)}
             className="mt-1"
-            placeholder="Selecione um áudio..."
-            isClearable
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <div className="flex items-center gap-2">
-              <Share2 className="w-4 h-4" />
-              Plataforma de Destino
-            </div>
-          </label>
-          <Select<Option>
-            value={socialPlatforms.find(p => p.value === options.socialPlatform)}
-            onChange={(selected) =>
-              updateOptions({ socialPlatform: selected?.value })
-            }
-            options={socialPlatforms}
+          <label className="block text-sm font-medium text-gray-700">Plataforma</label>
+          <Select
+            options={platformOptions}
+            onChange={handlePlatformChange}
+            value={platformOptions.find(option => option.value === selectedPlatform)}
+            className="mt-1"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Tipo de Processamento</label>
+          <Select
+            options={processingOptions}
+            onChange={handleProcessingTypeChange}
+            value={processingOptions.find(option => option.value === selectedProcessingType)}
             className="mt-1"
           />
         </div>
@@ -128,16 +159,6 @@ export const ProcessingOptions: React.FC = () => {
           <label htmlFor="autoRename" className="ml-2 text-sm text-gray-700">
             Renomear arquivos automaticamente
           </label>
-        </div>
-
-        <div>
-          <Select<Option>
-            className="basic-single"
-            classNamePrefix="select"
-            defaultValue={processingOptions[0]}
-            name="processing-option"
-            options={processingOptions}
-          />
         </div>
       </div>
     </div>

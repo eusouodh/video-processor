@@ -10,6 +10,13 @@ export class VideoProcessor {
     this.apiUrl = import.meta.env.VITE_API_URL || 'https://api.videoprocessing.ai';
   }
 
+  private async downloadFromS3(key: string): Promise<Blob> {
+    const response = await axios.get(`${this.apiUrl}/download/${key}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  }
+
   async extractAudio(videoFile: File, onProgress: (progress: number) => void): Promise<Blob> {
     try {
       // Upload do vídeo para o S3
@@ -38,7 +45,7 @@ export class VideoProcessor {
       if (status === 'completed' && lastStatusResponse) {
         // Download do áudio do S3
         const audioKey = lastStatusResponse.data.audioKey;
-        const audioBlob = await uploadToS3(audioKey);
+        const audioBlob = await this.downloadFromS3(audioKey);
         onProgress(100);
         return audioBlob;
       } else {
@@ -92,7 +99,7 @@ export class VideoProcessor {
       if (status === 'completed' && lastStatusResponse) {
         // Download do vídeo final do S3
         const outputKey = lastStatusResponse.data.outputKey;
-        const videoBlob = await uploadToS3(outputKey);
+        const videoBlob = await this.downloadFromS3(outputKey);
         onProgress(100);
         return videoBlob;
       } else {
