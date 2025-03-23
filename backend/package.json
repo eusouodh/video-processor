@@ -8,7 +8,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "test": "jest",
-    "heroku-postbuild": "npm run build"
+    "railway:build": "npm run build"
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
